@@ -22,7 +22,7 @@ Update fields on an existing project board item.
 
 ## Valid Status Values
 
-From `.claude-project-config.yml`:
+From `.claude-project-config.yml` (in workflow repo or current directory):
 - backlog, reported, triage, ready
 - in_progress, review, qa
 - fix_ready, verified, approved
@@ -84,7 +84,7 @@ gh issue comment ISSUE_NUMBER --repo protogen-org/REPO \
 
 ## Field ID Reference
 
-From `.claude-project-config.yml`:
+From `.claude-project-config.yml` (in workflow repo or current directory):
 
 | Field | Field ID |
 |-------|----------|

@@ -1,0 +1,154 @@
+# GitHub Projects Configuration for Claude Code
+# ProtoGen Organization - Grid Nav Board
+# Populated with actual IDs from protogen-org Grid Nav board
+# Last Updated: 2026-01-23
+
+github:
+  organization: "protogen-org"
+  project:
+    id: "PVT_kwDOC5eI7s4BK2oC"
+    number: 8
+    name: "Grid Nav"
+
+  fields:
+    # Work progress tracking
+    status:
+      id: "PVTSSF_lADOC5eI7s4BK2oCzg6mc-0"
+      options:
+        backlog: "f75ad846"
+        reported: "ded4043a"
+        triage: "422db8d1"
+        ready: "6b874b0c"
+        in_progress: "e18bf179"
+        review: "47fc9ee4"
+        qa: "aba860b9"
+        fix_ready: "93cacd72"
+        verified: "c861fef9"
+        approved: "90f6b26f"
+        dev: "ba2ea7a6"
+        staging: "85bfbcf7"
+        deploying: "a0b84839"
+        prod: "9e606ec5"
+        done: "f2fa8e41"
+        closed: "527e6993"
+
+    # Work type classification
+    work_type:
+      id: "PVTSSF_lADOC5eI7s4BK2oCzg6mmNQ"
+      options:
+        feature: "59fd994e"
+        bug: "eb205d1e"
+        hotfix: "34f9f1af"
+        deployment: "18e2f81b"
+        task: "e6b93822"
+
+    # Project/area association
+    project:
+      id: "PVTSSF_lADOC5eI7s4BK2oCzg6med0"
+      options:
+        grid_nav: "e044ed7f"
+        dash: "dfbf1402"
+        map: "a7f9487f"
+        reopt: "280b3eea"
+        database: "d9a45ee7"
+        mgnav: "e2284660"
+
+    # Deployment environment
+    environment:
+      id: "PVTSSF_lADOC5eI7s4BK2oCzg6me_U"
+      options:
+        dev: "acf498ef"
+        staging: "db8d9743"
+        main: "9517df63"
+        feature: "22783365"
+        bugfix: "b220678c"
+        hotfix: "e8178dac"
+
+    # Priority levels
+    priority:
+      id: "PVTSSF_lADOC5eI7s4BK2oCzg6mdrk"
+      options:
+        p0_critical: "79628723"
+        p1_high: "0a877460"
+        p2_medium: "da944a9c"
+        p3_low: "6b437f78"
+
+    # Release type
+    release_type:
+      id: "PVTSSF_lADOC5eI7s4BK2oCzg6mlJk"
+      options:
+        feature_release: "8550c256"
+        bug_fix: "2d6f1d09"
+        hotfix: "395bf55b"
+        rollback: "23b5a878"
+
+    # Bug categorization
+    bug_type:
+      id: "PVTSSF_lADOC5eI7s4BK2oCzg6mias"
+      options:
+        ui: "dcc9727f"
+        api: "b4018468"
+        data: "b92bce43"
+        database: "3ea4978a"
+        other: "b474d84a"
+
+  # Repository mapping
+  repositories:
+    grid_nav:
+      - owner: "protogen-org"
+        name: "ProtoGen-tools-frontend"
+      - owner: "protogen-org"
+        name: "ProtoGen-tools-backend"
+    dash:
+      - owner: "protogen-org"
+        name: "Dashboard"
+    map:
+      - owner: "protogen-org"
+        name: "Protogen-tools-map"
+    reopt:
+      - owner: "protogen-org"
+        name: "ProtoGen-REopt-Engine"
+    specs:
+      - owner: "protogen-org"
+        name: "ProtoGen-Specs"
+
+# Workflow configuration
+workflow:
+  # Work status progression (what transitions are allowed)
+  status_transitions:
+    backlog: [ready, triage]
+    triage: [ready, backlog]
+    ready: [in_progress]
+    in_progress: [review]
+    review: [in_progress, qa]  # Can go back for changes
+    qa: [review, approved]
+    approved: [done]
+    done: []  # Terminal state
+
+  # Environment progression (deployment pipeline)
+  environment_transitions:
+    dev: [staging]
+    staging: [main]
+    main: []  # Production - terminal
+
+  # Branch to environment mapping
+  branch_environment:
+    dev: dev
+    staging: staging
+    main: main
+
+  # Branch naming patterns
+  branch_patterns:
+    feature: "feature/<PROJECT>-<YYYYMMDD>-<##>-<description>"
+    bugfix: "bugfix/<PROJECT>-<YYYYMMDD>-<##>-<description>"
+    hotfix: "hotfix/<PROJECT>-<YYYYMMDD>-<##>-<description>"
+
+  # Project prefixes for branch naming
+  project_prefixes:
+    grid_nav: "GRID"
+    dash: "DASH"
+    map: "MAP"
+    reopt: "REOPT"
+    database: "DB"
+    mgnav: "MGNAV"
+    specs: "SPEC"

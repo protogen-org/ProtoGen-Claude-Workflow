@@ -91,7 +91,7 @@ mutation {
 
 ### Step 4: Set Project Fields
 
-Use the field IDs from `.claude-project-config.yml` to set fields:
+Use the field IDs from `.claude-project-config.yml` (in workflow repo or current directory) to set fields:
 
 ```bash
 # Get the project item ID from Step 3 response, then:

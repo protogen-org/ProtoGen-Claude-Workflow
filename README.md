@@ -91,6 +91,8 @@ Global commands available in any Claude Code session:
 - `/project-promote` - Move items through deployment stages
 - `/project-cicd` - Check CI/CD pipeline status
 
+> **Note:** GitHub Projects commands use `.claude-project-config.yml` for board configuration. The default config (Grid Nav project) is in this repo. Individual repositories can override by placing their own config file in the repo root.
+
 ### Workflow Functions
 
 **PowerShell (Windows):**
@@ -125,6 +127,7 @@ Global commands available in any Claude Code session:
 ProtoGen-Claude-Workflow/
 ├── README.md                          # This file
 ├── .gitignore                         # Git ignore patterns
+├── .claude-project-config.yml         # GitHub Projects configuration (Grid Nav)
 ├── .claude/
 │   └── commands/                      # Slash commands (*.md files)
 │       ├── issues.md

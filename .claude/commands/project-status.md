@@ -16,7 +16,10 @@ Display items on the GitHub Project board grouped by deployment stage.
 
 ## Instructions
 
-1. Load configuration from `.claude-project-config.yml` to get project ID and field IDs
+1. Load configuration from `.claude-project-config.yml`:
+   - First check current repository directory for repo-specific override
+   - If not found, look in `~/.claude/commands/../../.claude-project-config.yml` (the workflow repo)
+   - The config file contains project ID, field IDs, and repository mappings
 
 2. Run this GraphQL query to fetch project items:
 
