@@ -1,0 +1,26 @@
+{
+  "mcpServers": {
+    "holoviz": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["holoviz-mcp"],
+      "env": {}
+    },
+    "context7": {
+      "type": "http",
+      "url": "https://mcp.context7.com/mcp"
+    },
+    "playwright": {
+      "type": "stdio",
+      "command": "cmd",
+      "args": ["/c", "npx", "@playwright/mcp@latest"],
+      "env": {}
+    },
+    "mui-mcp": {
+      "type": "stdio",
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "@mui/mcp@latest"],
+      "env": {}
+    }
+  }
+}
