@@ -1,0 +1,21 @@
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Editor temp files
+*.swp
+*.swo
+*~
+*.bak
+
+# IDE folders
+.vscode/
+.idea/
+
+# Local customizations (not shared)
+*.local.*
+local-*
+
+# Test files
+test-*
+tmp-*
