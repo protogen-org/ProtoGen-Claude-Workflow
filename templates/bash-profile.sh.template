@@ -1,0 +1,59 @@
+# Bash Profile Template for ProtoGen Claude Code Workflow
+# Location: ~/.bashrc or ~/.bash_profile
+# Add this content to your existing profile or source this file
+
+# ============================================================================
+# ProtoGen Claude Code Workflow Functions
+# ============================================================================
+# Source workflow functions from Git repository
+# Update this path if you clone the repo to a different location
+CLAUDE_WORKFLOW_PATH="$HOME/ProtoGen-Claude-Workflow/scripts/bash/claude-aliases.sh"
+
+if [ -f "$CLAUDE_WORKFLOW_PATH" ]; then
+    source "$CLAUDE_WORKFLOW_PATH"
+    echo "ProtoGen Claude workflow loaded: cc, ccw, prv, pr-done, pstop, ccw-clean" >&2
+else
+    echo "Warning: Claude workflow not found at $CLAUDE_WORKFLOW_PATH" >&2
+    echo "Clone the repo: git clone https://github.com/protogen-org/ProtoGen-Claude-Workflow.git" >&2
+fi
+
+# ============================================================================
+# Git Integration - Show current branch in prompt (optional)
+# ============================================================================
+# Uncomment for a simple git-aware prompt
+# parse_git_branch() {
+#     git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
+# }
+# export PS1="\u@\h:\w \$(parse_git_branch)\$ "
+
+# ============================================================================
+# Conda Environment Auto-Activation
+# ============================================================================
+# Automatically activate conda environment when entering a directory with environment.yml
+cd_with_conda_activate() {
+    builtin cd "$@"
+
+    if [ -f "environment.yml" ]; then
+        ENV_NAME=$(grep "^name:" environment.yml | sed 's/name:[[:space:]]*//')
+        if [ -n "$ENV_NAME" ] && [ "$CONDA_DEFAULT_ENV" != "$ENV_NAME" ]; then
+            conda activate "$ENV_NAME" 2>/dev/null
+            if [ $? -eq 0 ]; then
+                echo "Activated conda env: $ENV_NAME" >&2
+            fi
+        fi
+    fi
+}
+
+# Override cd command
+alias cd='cd_with_conda_activate'
+
+# ============================================================================
+# Optional: Additional Customizations
+# ============================================================================
+
+# Uncomment to set a custom starting directory
+# cd "$HOME/Documents"
+
+# Uncomment to add custom aliases
+# alias python='$HOME/anaconda3/bin/python'
+# alias ll='ls -lah'

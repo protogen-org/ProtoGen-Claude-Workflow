@@ -1,0 +1,69 @@
+# PowerShell Profile Template for ProtoGen Claude Code Workflow
+# Location: Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1
+# (Or run: notepad $PROFILE to edit your profile)
+
+# ============================================================================
+# Git Integration - Show current branch in prompt
+# ============================================================================
+Import-Module posh-git -ErrorAction SilentlyContinue
+
+# Abbreviate home directory as ~ in prompt
+$GitPromptSettings.DefaultPromptAbbreviateHomeDirectory = $true
+
+# ============================================================================
+# ProtoGen Claude Code Workflow Functions
+# ============================================================================
+# Source workflow functions from Git repository
+# Update this path if you clone the repo to a different location
+$claudeWorkflowPath = "$env:USERPROFILE\Documents\specs\ProtoGen-Claude-Workflow\scripts\powershell\claude-aliases.ps1"
+
+if (Test-Path $claudeWorkflowPath) {
+    . $claudeWorkflowPath
+    Write-Host "ProtoGen Claude workflow loaded: cc, ccw, prv, pr-done, pstop, ccw-clean, gpa, dashcheck" -ForegroundColor DarkGray
+} else {
+    Write-Host "Warning: Claude workflow not found at $claudeWorkflowPath" -ForegroundColor Yellow
+    Write-Host "Clone the repo: git clone https://github.com/protogen-org/ProtoGen-Claude-Workflow.git" -ForegroundColor Yellow
+}
+
+# ============================================================================
+# Conda Environment Auto-Activation
+# ============================================================================
+# Automatically activate conda environment when entering a directory with environment.yml
+function Set-LocationWithCondaActivate {
+    param([string]$Path)
+
+    if ($Path) {
+        Microsoft.PowerShell.Management\Set-Location $Path
+    }
+
+    # Check for environment.yml in new directory
+    if (Test-Path "environment.yml") {
+        $envContent = Get-Content "environment.yml" -Raw
+        if ($envContent -match "name:\s*(.+)") {
+            $envName = $Matches[1].Trim()
+            if ($env:CONDA_DEFAULT_ENV -ne $envName) {
+                conda activate $envName 2>$null
+                if ($LASTEXITCODE -eq 0) {
+                    Write-Host "Activated conda env: $envName" -ForegroundColor DarkGray
+                }
+            }
+        }
+    }
+}
+
+# Override cd to use our function
+Set-Alias -Name cd -Value Set-LocationWithCondaActivate -Option AllScope -Force
+
+# Also run on startup for current directory
+Set-LocationWithCondaActivate
+
+# ============================================================================
+# Optional: Additional Customizations
+# ============================================================================
+
+# Uncomment to set a custom starting directory
+# Set-Location "$env:USERPROFILE\Documents"
+
+# Uncomment to add custom aliases
+# Set-Alias -Name gh -Value "C:\Program Files\GitHub CLI\gh.exe"
+# Set-Alias -Name python -Value "C:\Users\$env:USERNAME\anaconda3\python.exe"
