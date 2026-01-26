@@ -10,6 +10,28 @@ This repository provides a unified Claude Code workflow for the ProtoGen team, c
 - **Configuration templates** for consistent team setup
 - **Documentation** for onboarding and troubleshooting
 
+## Four-Tier Workflow System
+
+ProtoGen repositories use tiered automation based on collaboration requirements:
+
+| Tier | Description | Workflow | Repositories |
+|------|-------------|----------|--------------|
+| **0** | Workflow Infrastructure | PR required, team review, explicit confirmation | ProtoGen-Claude-Workflow |
+| **1** | Production (Board) | Full `/project-*` commands, PR required | frontend, backend, Dashboard, map, REopt-Engine, Specs |
+| **2** | Team Dev Tools | `/issues` + `/work`, PRs recommended | batch_reopt, sandbox_dash, circuit_viz, pv_viz |
+| **3** | Personal/Infra | Direct commits OK, basic git hygiene | Personal repos, legacy tools, infrastructure |
+
+### Tier 0: Special Handling
+
+**This repository (ProtoGen-Claude-Workflow) is Tier 0.** Changes here affect the entire team's workflow. When working in this repo:
+
+- All changes require PRs with team review
+- Claude should ask for explicit confirmation before modifying slash commands
+- Test changes in Tier 2/3 repos before applying to production
+- Document rollback procedures for significant changes
+
+See [Migration Guide](docs/MIGRATION_GUIDE.md) for complete tier documentation and safeguards.
+
 ## Quick Start
 
 ### Prerequisites
