@@ -32,7 +32,7 @@ cc() {
     echo -e "${COLOR_YELLOW}  Claude will not ask for permission to execute commands or edit files.${COLOR_RESET}"
     echo ""
 
-    local allowed_tools="Bash,Edit,Write,Read,Glob,Grep,WebFetch,Task,mcp__holoviz__*"
+    local allowed_tools="Bash,Edit,Write,Read,Glob,Grep,WebFetch,WebSearch,Task,mcp__holoviz__*"
     claude --permission-mode dontAsk --allowedTools "$allowed_tools" "$@"
 }
 
@@ -158,7 +158,7 @@ ccw() {
     color_echo "$COLOR_CYAN" "Starting Claude Code with /work command..."
     echo ""
 
-    local allowed_tools="Bash,Edit,Write,Read,Glob,Grep,WebFetch,Task,mcp__holoviz__*"
+    local allowed_tools="Bash,Edit,Write,Read,Glob,Grep,WebFetch,WebSearch,Task,mcp__holoviz__*"
     claude --permission-mode dontAsk --allowedTools "$allowed_tools" -p "$prompt" "$@"
 }
 

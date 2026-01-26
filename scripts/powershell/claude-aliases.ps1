@@ -14,7 +14,7 @@ function cc {
     Write-Host "  Claude will not ask for permission to execute commands or edit files." -ForegroundColor Yellow
     Write-Host ""
 
-    $allowedTools = @("Bash", "Edit", "Write", "Read", "Glob", "Grep", "WebFetch", "Task", "mcp__holoviz__*")
+    $allowedTools = @("Bash", "Edit", "Write", "Read", "Glob", "Grep", "WebFetch", "WebSearch", "Task", "mcp__holoviz__*")
     claude --permission-mode dontAsk --allowedTools $allowedTools @Args
 }
 
@@ -138,7 +138,7 @@ function ccw {
     Write-Host "Starting Claude Code with /work command..." -ForegroundColor Cyan
     Write-Host ""
 
-    $allowedTools = @("Bash", "Edit", "Write", "Read", "Glob", "Grep", "WebFetch", "Task", "mcp__holoviz__*")
+    $allowedTools = @("Bash", "Edit", "Write", "Read", "Glob", "Grep", "WebFetch", "WebSearch", "Task", "mcp__holoviz__*")
     claude --permission-mode dontAsk --allowedTools $allowedTools -p $prompt @RemainingArgs
 }
 
