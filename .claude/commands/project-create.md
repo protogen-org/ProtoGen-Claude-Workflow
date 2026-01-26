@@ -23,18 +23,27 @@ Ask the user for:
 - **Priority**: P0 (Critical) | P1 (High) | P2 (Medium) | P3 (Low). Default: P2
 - **Assignee**: GitHub username
 
-## Repository Mapping
+## Project Prefix to Field Mapping
 
-| Project | Repository | Notes |
-|---------|------------|-------|
-| GRID | ProtoGen-tools-frontend | React frontend |
-| GRID | ProtoGen-tools-backend | Flask API (default for GRID) |
-| DASH | Dashboard | Panel Material UI |
-| MAP | Protogen-tools-map | Mapping tool |
-| REOPT | ProtoGen-REopt-Engine | REopt engine |
-| DB | ProtoGen-tools-backend | Database work |
-| MGNAV | ProtoGen-tools-backend | Public MGNav |
-| SPEC | ProtoGen-Specs | Specifications |
+The project prefix determines BOTH the repository AND the Project field value on the board:
+
+| Project Prefix | Project Field Value | Repository | Notes |
+|----------------|---------------------|------------|-------|
+| GRID | Grid Nav | ProtoGen-tools-frontend | React frontend for Grid Nav |
+| GRID | Grid Nav | ProtoGen-tools-backend | Flask API for Grid Nav (default) |
+| DASH | Dash | Dashboard | Panel Material UI dashboard |
+| MAP | Map | Protogen-tools-map | Mapping tool |
+| REOPT | REopt | ProtoGen-REopt-Engine | REopt engine |
+| DB | Database | ProtoGen-tools-backend | Database infrastructure work |
+| MGNAV | MGNav | ProtoGen-tools-backend | Public MGNav feature |
+| SPEC | Grid Nav | ProtoGen-Specs | Specifications (typically Grid Nav) |
+
+**Important**: Multiple project prefixes can use the same repository (e.g., GRID, DB, and MGNAV all use ProtoGen-tools-backend), but they represent different project areas and will be labeled differently on the project board.
+
+**For ProtoGen-tools-backend issues, ask the user which project area**:
+- **GRID** - For Grid Nav system work (system_builder, REopt integration, core functionality)
+- **DB** - For database infrastructure, migrations, schema changes
+- **MGNAV** - For Public MGNav-specific features
 
 ## Instructions
 
@@ -133,8 +142,15 @@ mutation {
 ```
 
 Set these fields:
-- **Work Type**: Based on type parameter
-- **Project**: Based on project parameter
+- **Work Type**: Based on type parameter (feature→Feature, bug→Bug, hotfix→Hotfix, task→Task)
+- **Project**: Based on project parameter using the "Project Field Value" column from the mapping table above:
+  - GRID → "Grid Nav" (grid_nav option)
+  - DASH → "Dash" (dash option)
+  - MAP → "Map" (map option)
+  - REOPT → "REopt" (reopt option)
+  - DB → "Database" (database option)
+  - MGNAV → "MGNav" (mgnav option)
+  - SPEC → "Grid Nav" (grid_nav option)
 - **Priority**: Based on priority parameter (default P2)
 - **Status**: Set to "Backlog" (or "In Progress" for hotfixes)
 
