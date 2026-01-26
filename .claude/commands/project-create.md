@@ -42,7 +42,7 @@ The project prefix determines BOTH the repository AND the Project field value on
 | MAP | Map | Protogen-tools-map | Mapping tool |
 | REOPT | REopt | ProtoGen-REopt-Engine | REopt engine |
 | DB | Database | ProtoGen-tools-backend | Database infrastructure work |
-| MGNAV | MGNav | ProtoGen-tools-backend | Public MGNav feature |
+| MGNAV | MGNav | ProtoGen-MGNav-backend | Public MGNav product |
 | SPEC | Grid Nav | ProtoGen-Specs | Specifications (typically Grid Nav) |
 
 ### Distinguishing Grid Nav Frontend vs Backend
