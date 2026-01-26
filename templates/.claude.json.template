@@ -21,6 +21,39 @@
       "command": "cmd",
       "args": ["/c", "npx", "-y", "@mui/mcp@latest"],
       "env": {}
+    },
+    "postgres": {
+      "type": "stdio",
+      "command": "python",
+      "args": [
+        "C:\\Users\\YOUR_USERNAME\\Documents\\mcp-postgres\\postgres_server.py",
+        "--conn",
+        "postgresql://USER:PASSWORD@HOST:PORT/protogen_rw_stage"
+      ],
+      "env": {},
+      "comment": "ProtoGen staging database - Replace USER, PASSWORD, HOST, PORT with actual credentials"
+    },
+    "protogen_rw": {
+      "type": "stdio",
+      "command": "python",
+      "args": [
+        "C:\\Users\\YOUR_USERNAME\\Documents\\mcp-postgres\\postgres_server.py",
+        "--conn",
+        "postgresql://USER:PASSWORD@HOST:PORT/protogen_rw"
+      ],
+      "env": {},
+      "comment": "ProtoGen production database - Replace USER, PASSWORD, HOST, PORT with actual credentials"
+    },
+    "protogen_rw_dev": {
+      "type": "stdio",
+      "command": "python",
+      "args": [
+        "C:\\Users\\YOUR_USERNAME\\Documents\\mcp-postgres\\postgres_server.py",
+        "--conn",
+        "postgresql://USER:PASSWORD@HOST:PORT/protogen_rw_dev"
+      ],
+      "env": {},
+      "comment": "ProtoGen development database - Replace USER, PASSWORD, HOST, PORT with actual credentials"
     }
   }
 }
