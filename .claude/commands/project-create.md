@@ -29,8 +29,8 @@ The project prefix determines BOTH the repository AND the Project field value on
 
 | Project Prefix | Project Field Value | Repository | Notes |
 |----------------|---------------------|------------|-------|
-| GRID | Grid Nav | ProtoGen-tools-frontend | React frontend for Grid Nav |
-| GRID | Grid Nav | ProtoGen-tools-backend | Flask API for Grid Nav (default) |
+| GRID | Grid Nav | ProtoGen-tools-frontend | React UI for Grid Nav |
+| GRID | Grid Nav | ProtoGen-tools-backend | Flask API for Grid Nav |
 | DASH | Dash | Dashboard | Panel Material UI dashboard |
 | MAP | Map | Protogen-tools-map | Mapping tool |
 | REOPT | REopt | ProtoGen-REopt-Engine | REopt engine |
@@ -38,12 +38,37 @@ The project prefix determines BOTH the repository AND the Project field value on
 | MGNAV | MGNav | ProtoGen-tools-backend | Public MGNav feature |
 | SPEC | Grid Nav | ProtoGen-Specs | Specifications (typically Grid Nav) |
 
-**Important**: Multiple project prefixes can use the same repository (e.g., GRID, DB, and MGNAV all use ProtoGen-tools-backend), but they represent different project areas and will be labeled differently on the project board.
+### Distinguishing Grid Nav Frontend vs Backend
 
-**For ProtoGen-tools-backend issues, ask the user which project area**:
-- **GRID** - For Grid Nav system work (system_builder, REopt integration, core functionality)
-- **DB** - For database infrastructure, migrations, schema changes
-- **MGNAV** - For Public MGNav-specific features
+**GRID prefix applies to BOTH repositories** - always ask the user which one:
+
+**ProtoGen-tools-frontend** (React/TypeScript):
+- UI components, forms, pages, layouts
+- User interactions, client-side validation
+- React hooks, state management, context
+- Styling, CSS, Material-UI components
+- Client-side routing, navigation
+- Example: "Add PV configuration form", "Fix date picker styling", "Update dashboard layout"
+
+**ProtoGen-tools-backend** (Flask/Python):
+- API endpoints, routes, controllers
+- Business logic, calculations, algorithms
+- REopt integration, payload building (system_builder)
+- Database queries, models, ORM
+- Authentication, authorization, sessions
+- Background jobs, data processing
+- Example: "Add average outage algorithm", "Fix REopt payload validation", "Update tariff API"
+
+**Always ask**: "Is this a frontend (UI) or backend (API/logic) issue?"
+
+### Multiple Project Areas, Same Repository
+
+**ProtoGen-tools-backend** serves multiple project areas with different Project field values:
+- **GRID** → Project field: "Grid Nav" (system_builder, REopt, core Grid Nav API)
+- **DB** → Project field: "Database" (infrastructure, migrations, schema changes)
+- **MGNAV** → Project field: "MGNav" (Public MGNav-specific features)
+
+**When the user specifies backend**, ask which project area to set the correct field.
 
 ## Instructions
 
@@ -73,8 +98,17 @@ Or create a repo-specific override in the current directory.
 
 ### Step 1: Determine Repository
 
-Based on the project prefix, select the appropriate repository from the mapping above.
-For GRID, ask user if frontend or backend.
+Based on the project prefix, select the appropriate repository from the mapping table above.
+
+**For GRID (Grid Nav)**: Always ask the user whether this is a frontend or backend issue:
+- Use the guidance in "Distinguishing Grid Nav Frontend vs Backend" section above
+- Frontend → `ProtoGen-tools-frontend`
+- Backend → `ProtoGen-tools-backend`
+
+**For backend issues (tools-backend repo)**: If the user specified backend, ask which project area:
+- GRID (Grid Nav system work) → Project field: "Grid Nav"
+- DB (Database infrastructure) → Project field: "Database"
+- MGNAV (Public MGNav) → Project field: "MGNav"
 
 ### Step 2: Create the Issue
 
