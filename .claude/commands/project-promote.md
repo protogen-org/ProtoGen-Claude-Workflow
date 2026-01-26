@@ -31,6 +31,22 @@ Dev -> Staging -> Main (Production)
 
 ## Instructions
 
+### Step 0: Load Configuration
+
+Look for `.claude-project-config.yml` in this order:
+1. Current repo root: `./.claude-project-config.yml` (repo-specific override)
+2. Workflow repo: `~/Documents/ProtoGen-Claude-Workflow/.claude-project-config.yml` (team default)
+3. User home: `~/.claude-project-config.yml` (personal override)
+
+Use the first file found. Parse it to get:
+- `github.project.id` - Project board ID
+- `github.fields.status.id` and `.options` - Status field and progression
+- `github.fields.environment.id` and `.options` - Environment field
+- `workflow.status_transitions` - Allowed status transitions
+- `workflow.environment_transitions` - Allowed environment transitions
+
+If no config file exists, display error and stop.
+
 ### Step 1: Fetch Current Item Status
 
 ```bash
@@ -94,13 +110,15 @@ gh run list --repo protogen-org/REPO --branch BRANCH_NAME --limit 1
 
 ### Step 4: Update Status
 
+Use the project ID and status field ID from the loaded config:
+
 ```bash
 gh api graphql -f query='
 mutation {
   updateProjectV2ItemFieldValue(input: {
-    projectId: "PVT_kwDOC5eI7s4BK2oC"
+    projectId: "PROJECT_ID_FROM_CONFIG"
     itemId: "ITEM_ID"
-    fieldId: "PVTSSF_lADOC5eI7s4BK2oCzg6mc-0"
+    fieldId: "STATUS_FIELD_ID_FROM_CONFIG"
     value: { singleSelectOptionId: "NEW_STATUS_OPTION_ID" }
   }) {
     projectV2Item { id }
@@ -124,16 +142,16 @@ Validation checks:
 
 ## Environment Promotion
 
-When promoting deployment stages (separate from work status):
+When promoting deployment stages (separate from work status), use the environment field ID from config:
 
 ```bash
 # Update Environment field
 gh api graphql -f query='
 mutation {
   updateProjectV2ItemFieldValue(input: {
-    projectId: "PVT_kwDOC5eI7s4BK2oC"
+    projectId: "PROJECT_ID_FROM_CONFIG"
     itemId: "ITEM_ID"
-    fieldId: "PVTSSF_lADOC5eI7s4BK2oCzg6me_U"
+    fieldId: "ENVIRONMENT_FIELD_ID_FROM_CONFIG"
     value: { singleSelectOptionId: "ENVIRONMENT_OPTION_ID" }
   }) {
     projectV2Item { id }

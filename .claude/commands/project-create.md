@@ -38,6 +38,30 @@ Ask the user for:
 
 ## Instructions
 
+### Step 0: Load Configuration
+
+Look for `.claude-project-config.yml` in this order:
+1. Current repo root: `./.claude-project-config.yml` (repo-specific override)
+2. Workflow repo: `~/Documents/ProtoGen-Claude-Workflow/.claude-project-config.yml` (team default)
+3. User home: `~/.claude-project-config.yml` (personal override)
+
+Use the first file found. Parse it to get:
+- `github.project.id` - Project board ID
+- `github.fields.status.id` and `.options` - Status field configuration
+- `github.fields.work_type.id` and `.options` - Work type configuration
+- `github.fields.project.id` and `.options` - Project area configuration
+- `github.fields.priority.id` and `.options` - Priority configuration
+
+If no config file exists, display an error message:
+```
+Error: .claude-project-config.yml not found
+
+Please ensure the ProtoGen-Claude-Workflow repository is set up:
+  ~/Documents/ProtoGen-Claude-Workflow/.claude-project-config.yml
+
+Or create a repo-specific override in the current directory.
+```
+
 ### Step 1: Determine Repository
 
 Based on the project prefix, select the appropriate repository from the mapping above.
@@ -91,7 +115,7 @@ mutation {
 
 ### Step 4: Set Project Fields
 
-Use the field IDs from `.claude-project-config.yml` (in workflow repo or current directory) to set fields:
+Use the field IDs from the loaded config file to set fields:
 
 ```bash
 # Get the project item ID from Step 3 response, then:
