@@ -20,7 +20,14 @@ Ask the user for:
 
 ## Optional Parameters
 
+Ask the user for these (they can skip if not applicable):
 - **Priority**: P0 (Critical) | P1 (High) | P2 (Medium) | P3 (Low). Default: P2
+- **Environment**: dev | staging | main | feature | bugfix | hotfix. Default: dev
+  - Helps track which branch/environment the work targets
+  - For hotfixes: Automatically set to "main"
+- **Bug Type**: ui | api | data | database | other
+  - **Only ask if Type is "bug"** (not relevant for features/tasks/hotfixes)
+  - Helps categorize bugs for debugging and metrics
 - **Assignee**: GitHub username
 
 ## Project Prefix to Field Mapping
@@ -175,8 +182,11 @@ mutation {
 }'
 ```
 
-Set these fields:
+Set these fields using the field IDs and option IDs from the loaded config:
+
+**Always set these**:
 - **Work Type**: Based on type parameter (feature→Feature, bug→Bug, hotfix→Hotfix, task→Task)
+  - Use `github.fields.work_type.id` and `.options` from config
 - **Project**: Based on project parameter using the "Project Field Value" column from the mapping table above:
   - GRID → "Grid Nav" (grid_nav option)
   - DASH → "Dash" (dash option)
@@ -185,14 +195,27 @@ Set these fields:
   - DB → "Database" (database option)
   - MGNAV → "MGNav" (mgnav option)
   - SPEC → "Grid Nav" (grid_nav option)
-- **Priority**: Based on priority parameter (default P2)
+  - Use `github.fields.project.id` and `.options` from config
+- **Priority**: Based on priority parameter (default P2 - Medium)
+  - P0 → p0_critical, P1 → p1_high, P2 → p2_medium, P3 → p3_low
+  - Use `github.fields.priority.id` and `.options` from config
 - **Status**: Set to "Backlog" (or "In Progress" for hotfixes)
+  - Use `github.fields.status.id` and `.options.backlog` or `.options.in_progress` from config
+
+**Set if provided by user**:
+- **Environment**: If user specified (dev, staging, main, feature, bugfix, hotfix)
+  - Use `github.fields.environment.id` and `.options` from config
+  - dev → dev, staging → staging, main → main, feature → feature, bugfix → bugfix, hotfix → hotfix
+- **Bug Type**: If user specified AND Type is "bug" (ui, api, data, database, other)
+  - Use `github.fields.bug_type.id` and `.options` from config
+  - ui → ui, api → api, data → data, database → database, other → other
 
 ## Hotfix Special Handling
 
 For hotfixes:
 - Set Priority to P1 (High) automatically unless P0 specified
 - Set Status to "In Progress" (skip Backlog)
+- Set Environment to "main" (production hotfix)
 - Remind user: hotfix branches come from `main`, merge to main/staging/dev
 
 ## Output
@@ -206,10 +229,12 @@ Issue created successfully!
   URL:   https://github.com/protogen-org/ProtoGen-tools-frontend/issues/123
 
 Project board updated:
-  Status:   Backlog
-  Type:     Feature
-  Project:  Grid Nav
-  Priority: P2 - Medium
+  Status:      Backlog
+  Type:        Feature
+  Project:     Grid Nav
+  Priority:    P2 - Medium
+  Environment: dev (if specified)
+  Bug Type:    (not applicable for features)
 
 Next steps:
   1. Create branch: feature/GRID-20260123-01-user-dashboard-widget
