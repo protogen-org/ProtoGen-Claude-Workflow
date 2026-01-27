@@ -60,6 +60,35 @@ These MCPs are included in the `templates/.claude.json.template` file.
 
 **Installation:** `npx -y @mui/mcp@latest` (automatically downloads on first use)
 
+### 5. Notion MCP
+**Purpose:** Access and edit Notion pages/databases (e.g., GridNav documentation).
+
+```json
+"notion": {
+  "type": "stdio",
+  "command": "cmd",
+  "args": ["/c", "npx", "-y", "@notionhq/notion-mcp-server"],
+  "env": {
+    "NOTION_TOKEN": "YOUR_NOTION_TOKEN_HERE"
+  }
+}
+```
+
+**Installation:** `npx -y @notionhq/notion-mcp-server` (automatically downloads on first use)
+
+**Setup Steps:**
+1. Go to https://www.notion.so/profile/integrations
+2. Create a new internal integration
+3. Copy the Integration Secret (starts with `ntn_`)
+4. Replace `YOUR_NOTION_TOKEN_HERE` with your token
+5. Connect the integration to specific pages via the page's `...` menu → "Connect to"
+
+**Capabilities:**
+- Read/edit pages and databases
+- Search content
+- Create/update comments
+- Markdown editing (optimized for AI token usage)
+
 ---
 
 ## ProtoGen Database MCPs
