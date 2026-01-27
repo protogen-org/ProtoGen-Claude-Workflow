@@ -90,11 +90,13 @@ When working in ProtoGen-Claude-Workflow, Claude should:
 
 ```bash
 /project-status          # View board items by status
-/project-create          # Create issue with board integration
+/project-create          # Quick issue creation with board integration
 /project-workflow        # Full automation: issue → branch → board
 /project-update          # Update item fields
 /project-promote         # Move through deployment stages
 /project-cicd            # Check CI/CD pipeline status
+/issues                  # Research-driven issue creation (prompts for Tier 1)
+/work                    # Implement an issue autonomously
 ```
 
 ---
@@ -112,7 +114,7 @@ When working in ProtoGen-Claude-Workflow, Claude should:
 
 #### Tier 2 Workflow
 
-- **Use `/issues` and `/work`** without board integration
+- **Use `/issues` and `/work`** - `/issues` will prompt for tier and skip board integration when Tier 2 is selected
 - **Simpler branch strategy** - feature branches, but less formal
 - **PRs recommended** but not mandatory for all changes
 - **No board tracking** - work tracked via issues only
@@ -175,7 +177,7 @@ When working in ProtoGen-Claude-Workflow, Claude should:
 - **Direct commits to main/master allowed**
 - **No board tracking**
 - **Basic git hygiene only** - meaningful commit messages, don't break things
-- **Use standard Claude Code** - no special slash commands required
+- **`/issues` available** - select Tier 3 when prompted for streamlined issue creation (minimal research, basic format)
 
 ---
 
