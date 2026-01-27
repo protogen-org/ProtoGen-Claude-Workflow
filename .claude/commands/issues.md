@@ -22,6 +22,7 @@ You are an expert at creating high-quality GitHub issues that follow best practi
   - If a repo was specified in the input, use that
   - Otherwise, detect the current repo using `gh repo view --json nameWithOwner -q .nameWithOwner`
 - Validate the repository exists and is accessible
+- **Check if internal repo**: If the repo is under `protogen-org/*`, mark this as an internal issue (will trigger project board integration in Step 8)
 
 ### 1. Check for Duplicates
 - Search existing open AND closed issues for similar problems using `gh issue list` and `gh search issues`
@@ -112,7 +113,70 @@ If the issue spans multiple repositories:
 - Propose a cross-referencing strategy
 - After creating the primary issue, offer to create linked issues in other repos
 
-### 7. Final Output
+### 7. Project Board Integration (Internal Repos Only)
+
+**Skip this step if the repository is not under `protogen-org/`.**
+
+For internal ProtoGen repositories, after the issue is created, add it to the project board.
+
+#### 7a. Collect Project Metadata
+
+Ask the user for:
+- **Type**: feature | bug | hotfix | task
+- **Project**: GRID | DASH | MAP | REOPT | DB | MGNAV | SPEC
+- **Priority**: P0 (Critical) | P1 (High) | P2 (Medium) | P3 (Low). Default: P2
+
+#### 7b. Add to Project Board
+
+```bash
+# Get issue node ID
+ISSUE_ID=$(gh issue view ISSUE_NUMBER --repo protogen-org/REPO --json id -q .id)
+
+# Add to project
+gh api graphql -f query='
+mutation {
+  addProjectV2ItemById(input: {
+    projectId: "PVT_kwDOC5eI7s4BK2oC"
+    contentId: "'$ISSUE_ID'"
+  }) {
+    item { id }
+  }
+}'
+```
+
+#### 7c. Set Project Fields
+
+Use the field IDs from `.claude-project-config.yml` (in workflow repo or current directory) to set fields:
+
+```bash
+# Get the project item ID from Step 7b response, then:
+gh api graphql -f query='
+mutation {
+  updateProjectV2ItemFieldValue(input: {
+    projectId: "PVT_kwDOC5eI7s4BK2oC"
+    itemId: "ITEM_ID"
+    fieldId: "FIELD_ID"
+    value: { singleSelectOptionId: "OPTION_ID" }
+  }) {
+    projectV2Item { id }
+  }
+}'
+```
+
+Set these fields:
+- **Work Type**: Based on type parameter
+- **Project**: Based on project parameter
+- **Priority**: Based on priority parameter (default P2)
+- **Status**: Set to "Backlog" (or "In Progress" for hotfixes)
+
+#### 7d. Hotfix Special Handling
+
+For hotfixes:
+- Set Priority to P1 (High) automatically unless P0 specified
+- Set Status to "In Progress" (skip Backlog)
+- Remind user: hotfix branches come from `main`, merge to main/staging/dev
+
+### 8. Final Output
 Present the complete GitHub issue content in `<github_issue>` tags.
 
 The issue should end with a Code References section like this:
@@ -137,6 +201,27 @@ gh issue create --repo <owner/repo> \
 
 Include any other relevant flags (--milestone, --project).
 
+**For internal repos**, after issue creation, display project board status:
+
+```
+Issue created successfully!
+
+  Issue: #123
+  Title: [Feature] Add user dashboard widget
+  Repo:  protogen-org/ProtoGen-tools-frontend
+  URL:   https://github.com/protogen-org/ProtoGen-tools-frontend/issues/123
+
+Project board updated:
+  Status:   Backlog
+  Type:     Feature
+  Project:  GRID
+  Priority: P2 - Medium
+
+Next steps:
+  1. Create branch: feature/GRID-20260123-01-user-dashboard-widget
+  2. Or use /project-workflow to automate branch creation
+```
+
 **Optional:** Ask the user if they want to:
 1. Create the issue immediately
 2. Create as a draft (if supported by the repo)
@@ -152,8 +237,16 @@ Include any other relevant flags (--milestone, --project).
 # Target a different repo by prefixing with "repo:"
 /issues repo: holoviz/panel Create a DatePicker widget that supports a "disabled" parameter...
 
+# Internal repo (will prompt for project metadata and add to board)
+/issues repo: protogen-org/ProtoGen-tools-frontend Add a loading spinner to the dashboard
+
 # Typical workflow:
 # 1. Use Claude Code prompt generator to craft your feature/bug description
 # 2. Copy the generated prompt
 # 3. Run: /issues <paste prompt here>
 ```
+
+## Related Commands
+
+- `/project-create` - Quick issue creation for PMs (skips research, goes straight to board)
+- `/project-workflow` - Start working on an issue (creates branch, updates status)
