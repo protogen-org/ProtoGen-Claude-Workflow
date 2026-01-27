@@ -77,17 +77,58 @@ These MCPs are included in the `templates/.claude.json.template` file.
 **Installation:** `npx -y @notionhq/notion-mcp-server` (automatically downloads on first use)
 
 **Setup Steps:**
-1. Go to https://www.notion.so/profile/integrations
-2. Create a new internal integration
-3. Copy the Integration Secret (starts with `ntn_`)
-4. Replace `YOUR_NOTION_TOKEN_HERE` with your token
-5. Connect the integration to specific pages via the page's `...` menu → "Connect to"
+
+1. **Create a Notion Integration:**
+   - Go to https://www.notion.so/profile/integrations
+   - Click "New integration"
+   - Name it (e.g., "Claude Code MCP")
+   - Select your workspace
+   - Click "Submit"
+   - Copy the Integration Secret (starts with `ntn_`)
+
+2. **Add Token to Claude Config:**
+   - Replace `YOUR_NOTION_TOKEN_HERE` in `~/.claude.json` with your token
+
+3. **Allow Notion Tools in Claude Code:**
+   - Add to `~/.claude/settings.json`:
+     ```json
+     {
+       "permissions": {
+         "allow": ["mcp__notion__*"]
+       }
+     }
+     ```
+
+4. **Add Integration to Your Workspace:**
+   - In Notion, go to **Settings & members** (left sidebar)
+   - Click **Connections**
+   - Find your integration and click **Add to workspace**
+   - This step is required before you can share individual pages
+
+5. **Share Pages with the Integration:**
+   - Open any page you want Claude to access
+   - Click **...** menu → **Connect to** → Select your integration
+   - Or click **Share** → Search for your integration name
+
+**Verification:**
+```bash
+# Check MCP is connected
+claude mcp list
+
+# In Claude, ask it to identify itself:
+# "What Notion integration am I connected as?"
+# Claude can call mcp__notion__API-get-self to show the integration name
+```
 
 **Capabilities:**
 - Read/edit pages and databases
 - Search content
 - Create/update comments
-- Markdown editing (optimized for AI token usage)
+
+**Troubleshooting:**
+- **"Could not find page"**: The page hasn't been shared with the integration. Use step 5 above.
+- **Integration not appearing in Share menu**: Complete step 4 first (add to workspace via Connections).
+- **Permission denied in Claude**: Complete step 3 (update settings.json).
 
 ---
 
