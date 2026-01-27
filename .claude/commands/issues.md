@@ -16,7 +16,7 @@ This command adapts its behavior based on the repository's workflow tier:
 
 | Tier | Description | Behavior |
 |------|-------------|----------|
-| **Tier 1** | Production repos (Dashboard, tools-frontend, etc.) | Full research + project board integration |
+| **Tier 1** | Production repos (ProtoGen-tools-Dashboard, tools-frontend, etc.) | Full research + project board integration |
 | **Tier 2** | Team dev tools (der-Simulator, pgnode1-server) | Full research, labels only, no board |
 | **Tier 3** | Personal/sandbox repos | Streamlined research, basic issue |
 | **External** | Non-protogen-org repos | Full research, follows target repo conventions |
@@ -48,7 +48,7 @@ Present these options and wait for selection:
 > 3. **Tier 3 (Personal/Sandbox)** - Minimal workflow
 
 **Examples of each tier:**
-- Tier 1: Dashboard, tools-frontend, tools-backend, map, REopt-Engine, Specs
+- Tier 1: ProtoGen-tools-Dashboard, tools-frontend, tools-backend, map, REopt-Engine, Specs
 - Tier 2: der-Simulator, pgnode1-server, shared dev tools
 - Tier 3: Personal sandboxes, experiments, scratch repos
 
@@ -277,7 +277,7 @@ Next steps:
 /issues repo: holoviz/panel Create a DatePicker widget that supports a "disabled" parameter...
 
 # Tier 1 (Production) - will prompt to confirm tier, then full workflow + board
-/issues repo: protogen-org/Dashboard Add a loading spinner to the dashboard
+/issues repo: protogen-org/ProtoGen-tools-Dashboard Add a loading spinner to the dashboard
 
 # Tier 2 (Team Dev) - will prompt to confirm tier, full research, no board
 /issues repo: protogen-org/der-Simulator Add support for new inverter model
