@@ -14,13 +14,15 @@ This command is interactive - it will prompt for required information.
 
 Ask the user for:
 - **Type**: feature | bug | hotfix | task
-- **Project**: GRID | DASH | MAP | REOPT | DB | MGNAV | SPEC
 - **Title**: Short description of the work
 - **Description**: Full description of work to be done
 
 ## Optional Parameters
 
 Ask the user for these (they can skip if not applicable):
+- **Project**: GRID | DASH | MAP | REOPT | DB | MGNAV | SPEC
+  - Auto-detected from current repository if not specified
+  - User can override the default (e.g., change GRID to DB for database work in tools-backend)
 - **Priority**: P0 (Critical) | P1 (High) | P2 (Medium) | P3 (Low). Default: P2
 - **Environment**: dev | staging | main | feature | bugfix | hotfix. Default: dev
   - Helps track which branch/environment the work targets
@@ -29,6 +31,22 @@ Ask the user for these (they can skip if not applicable):
   - **Only ask if Type is "bug"** (not relevant for features/tasks/hotfixes)
   - Helps categorize bugs for debugging and metrics
 - **Assignee**: GitHub username
+
+## Project Auto-Detection
+
+If the user does not specify a Project, detect it from the current repository:
+
+| Current Repository | Default Project |
+|--------------------|-----------------|
+| Dashboard | DASH |
+| ProtoGen-tools-frontend | GRID |
+| ProtoGen-tools-backend | GRID |
+| ProtoGen-MGNav-backend | MGNAV |
+| ProtoGen-REopt-Engine | REOPT |
+| Protogen-tools-map | MAP |
+| ProtoGen-Specs | SPEC |
+
+Inform the user of the detected default and allow them to override if needed.
 
 ## Project Prefix to Field Mapping
 
