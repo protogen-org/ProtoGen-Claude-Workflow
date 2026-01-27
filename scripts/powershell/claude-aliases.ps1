@@ -1,7 +1,7 @@
 # Claude Code Workflow Functions
 # PowerShell equivalent of .claude-aliases.sh
-# Synced via Dropbox - source from PowerShell profile:
-#   . "$env:USERPROFILE\ProtoGen Dropbox\Adam Morse\claude-aliases.ps1"
+# Source from PowerShell profile:
+#   . "$env:USERPROFILE\Documents\ProtoGen-Claude-Workflow\scripts\powershell\claude-aliases.ps1"
 
 # Common worktrees directory
 $script:WORKTREES_DIR = "$env:USERPROFILE\Documents\worktrees"
@@ -170,15 +170,39 @@ function ccw-clean {
 
     if ($All) {
         if (Test-Path $script:WORKTREES_DIR) {
+            $parentRepos = @{}
             Get-ChildItem -Path $script:WORKTREES_DIR -Directory | ForEach-Object {
                 $wtName = $_.Name
+                $wtPath = $_.FullName
                 if ($Repo -and -not ($wtName -match "^$Repo-")) {
                     return
                 }
                 Write-Host "Removing worktree: $wtName..." -ForegroundColor Yellow
-                git worktree remove $_.FullName --force 2>$null
+
+                # Find parent repo from .git file
+                $gitFile = Join-Path $wtPath ".git"
+                if (Test-Path $gitFile) {
+                    $gitContent = Get-Content $gitFile -Raw
+                    if ($gitContent -match "gitdir:\s*(.+)") {
+                        $gitDir = $Matches[1].Trim()
+                        # Extract parent repo path (everything before .git/worktrees/)
+                        if ($gitDir -match "^(.+)[/\\]\.git[/\\]worktrees[/\\]") {
+                            $parentRepo = $Matches[1]
+                            $parentRepos[$parentRepo] = $true
+                            git -C $parentRepo worktree remove $wtPath --force 2>$null
+                            if ($LASTEXITCODE -eq 0) {
+                                return
+                            }
+                        }
+                    }
+                }
+                # Fallback: delete directory directly
+                Remove-Item -Path $wtPath -Recurse -Force -ErrorAction SilentlyContinue
             }
-            git worktree prune 2>$null
+            # Prune all affected parent repos
+            foreach ($repo in $parentRepos.Keys) {
+                git -C $repo worktree prune 2>$null
+            }
             Write-Host "Worktrees cleaned." -ForegroundColor Green
         } else {
             Write-Host "No worktrees directory found at $script:WORKTREES_DIR" -ForegroundColor Yellow
