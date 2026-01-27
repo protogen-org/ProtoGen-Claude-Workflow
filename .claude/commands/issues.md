@@ -10,6 +10,17 @@ You are an expert at creating high-quality GitHub issues that follow best practi
 - Issue Description: $ARGUMENTS (paste the output from Claude Code prompt generator here)
 - Repository: Defaults to current repo. To target a different repo, include "repo: owner/repo" at the start of your description.
 
+## Workflow Tiers
+
+This command adapts its behavior based on the repository's workflow tier:
+
+| Tier | Description | Behavior |
+|------|-------------|----------|
+| **Tier 1** | Production repos (Dashboard, tools-frontend, etc.) | Full research + project board integration |
+| **Tier 2** | Team dev tools (der-Simulator, pgnode1-server) | Full research, labels only, no board |
+| **Tier 3** | Personal/sandbox repos | Streamlined research, basic issue |
+| **External** | Non-protogen-org repos | Full research, follows target repo conventions |
+
 ## Process
 
 ### 0. Pre-flight Checks
@@ -22,17 +33,27 @@ You are an expert at creating high-quality GitHub issues that follow best practi
   - If a repo was specified in the input, use that
   - Otherwise, detect the current repo using `gh repo view --json nameWithOwner -q .nameWithOwner`
 - Validate the repository exists and is accessible
-- **Check if project-tracked repo**: Only the following repos are tracked on the ProtoGen project board:
-  - `protogen-org/ProtoGen-tools-frontend`
-  - `protogen-org/ProtoGen-tools-backend`
-  - `protogen-org/Dashboard`
-  - `protogen-org/Protogen-tools-map`
-  - `protogen-org/ProtoGen-REopt-Engine`
-  - `protogen-org/ProtoGen-Specs`
 
-  If the target repo is in this list, mark it for project board integration (Step 7). Otherwise, skip Step 7 entirely.
+### 0a. Determine Workflow Tier
+
+**For non-protogen-org repos:** Mark as "External" and skip tier selection.
+
+**For protogen-org repos:** Ask the user to confirm the workflow tier:
+
+> "This is a protogen-org repository. Which workflow tier applies?"
+> - **Tier 1 (Production)**: Full workflow with GitHub Projects board (Dashboard, tools-frontend, tools-backend, map, REopt-Engine, Specs)
+> - **Tier 2 (Team Dev)**: Team collaboration without project board (der-Simulator, pgnode1-server, shared tools)
+> - **Tier 3 (Personal/Sandbox)**: Minimal workflow for personal repos and experiments
+
+Use the selected tier to determine behavior in subsequent steps:
+- **Tier 1**: Execute all steps including Step 7 (Project Board Integration)
+- **Tier 2**: Execute Steps 1-6, skip Step 7, add team labels
+- **Tier 3**: Streamlined execution - skip duplicate deep-search, minimal research, basic issue structure
+- **External**: Execute Steps 1-6, follow target repo conventions
 
 ### 1. Check for Duplicates
+**Tier 3**: Do a quick title search only. **All other tiers**: Full duplicate search.
+
 - Search existing open AND closed issues for similar problems using `gh issue list` and `gh search issues`
 - If potential duplicates are found, present them to the user and ask whether to:
   - Continue with a new issue (referencing the related ones)
@@ -40,6 +61,8 @@ You are an expert at creating high-quality GitHub issues that follow best practi
   - Abort
 
 ### 2. Research the Repository
+**Tier 3**: Skip this step - use basic issue format. **All other tiers**: Full research.
+
 - Visit the provided repository and examine its existing structure, issues, and documentation
 - Look for CONTRIBUTING.md, issue templates, or any files containing guidelines for creating issues
 - Note the project's coding style, naming conventions, and conventions for submitting issues
@@ -47,6 +70,8 @@ You are an expert at creating high-quality GitHub issues that follow best practi
 - Identify any issue templates the project uses (bug report, feature request, etc.)
 
 ### 3. Research Best Practices
+**Tier 3**: Skip this step. **All other tiers**: Full research.
+
 - Consider current best practices for writing GitHub issues, focusing on:
   - Clarity: Make the issue easy to understand
   - Completeness: Include all necessary context and information
@@ -121,11 +146,11 @@ If the issue spans multiple repositories:
 - Propose a cross-referencing strategy
 - After creating the primary issue, offer to create linked issues in other repos
 
-### 7. Project Board Integration (Project-Tracked Repos Only)
+### 7. Project Board Integration (Tier 1 Only)
 
-**Skip this step if the repository is not in the project-tracked list from Step 0.**
+**Skip this step unless Tier 1 was selected in Step 0a.**
 
-For project-tracked repositories, after the issue is created, add it to the project board.
+For Tier 1 (Production) repositories, after the issue is created, add it to the project board.
 
 #### 7a. Collect Project Metadata
 
@@ -209,7 +234,7 @@ gh issue create --repo <owner/repo> \
 
 Include any other relevant flags (--milestone, --project).
 
-**For project-tracked repos**, after issue creation, display project board status:
+**For Tier 1 repos**, after issue creation, display project board status:
 
 ```
 Issue created successfully!
@@ -239,25 +264,32 @@ Next steps:
 ## Usage Examples
 
 ```
-# Paste output from Claude Code prompt generator (uses current repo)
-/issues Create a DatePicker widget that supports a "disabled" parameter. When disabled=True, the widget should be grayed out and not respond to user interaction. This should work consistently whether the widget is standalone or nested inside layout components like Column or Row.
-
-# Target a different repo by prefixing with "repo:"
+# External repo - full research, follows repo conventions
 /issues repo: holoviz/panel Create a DatePicker widget that supports a "disabled" parameter...
 
-# Project-tracked repo (will prompt for project metadata and add to board)
-/issues repo: protogen-org/ProtoGen-tools-frontend Add a loading spinner to the dashboard
+# Tier 1 (Production) - will prompt to confirm tier, then full workflow + board
+/issues repo: protogen-org/Dashboard Add a loading spinner to the dashboard
 
-# Other protogen-org repos not on project board (no board integration)
-/issues repo: protogen-org/circuit_viz Fix the voltage display scaling issue
+# Tier 2 (Team Dev) - will prompt to confirm tier, full research, no board
+/issues repo: protogen-org/der-Simulator Add support for new inverter model
+
+# Tier 3 (Personal) - will prompt to confirm tier, streamlined workflow
+/issues repo: protogen-org/sandbox_dash Fix the voltage display scaling issue
+
+# Using current repo (detects repo, prompts for tier if protogen-org)
+/issues Create a DatePicker widget that supports a "disabled" parameter.
 
 # Typical workflow:
-# 1. Use Claude Code prompt generator to craft your feature/bug description
-# 2. Copy the generated prompt
-# 3. Run: /issues <paste prompt here>
+# 1. Craft your feature/bug description
+# 2. Run: /issues <description>
+# 3. If protogen-org repo, select the appropriate tier when prompted
 ```
 
 ## Related Commands
 
-- `/project-create` - Quick issue creation for PMs (skips research, goes straight to board)
+- `/project-create` - Quick Tier 1 issue creation for PMs (skips research, goes straight to board)
 - `/project-workflow` - Start working on an issue (creates branch, updates status)
+
+## Tier Reference
+
+See [Migration Guide](../docs/MIGRATION_GUIDE.md) for complete tier documentation.
