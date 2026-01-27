@@ -38,12 +38,21 @@ This command adapts its behavior based on the repository's workflow tier:
 
 **For non-protogen-org repos:** Mark as "External" and skip tier selection.
 
-**For protogen-org repos:** Ask the user to confirm the workflow tier:
+**For protogen-org repos:** **STOP and ask the user to select the workflow tier. DO NOT auto-select or infer the tier - you MUST prompt and wait for the user's response.**
 
-> "This is a protogen-org repository. Which workflow tier applies?"
-> - **Tier 1 (Production)**: Full workflow with GitHub Projects board (Dashboard, tools-frontend, tools-backend, map, REopt-Engine, Specs)
-> - **Tier 2 (Team Dev)**: Team collaboration without project board (der-Simulator, pgnode1-server, shared tools)
-> - **Tier 3 (Personal/Sandbox)**: Minimal workflow for personal repos and experiments
+Present these options and wait for selection:
+
+> "This is a protogen-org repository. Which workflow tier should I use?"
+> 1. **Tier 1 (Production)** - Full workflow with GitHub Projects board
+> 2. **Tier 2 (Team Dev)** - Team collaboration, no project board
+> 3. **Tier 3 (Personal/Sandbox)** - Minimal workflow
+
+**Examples of each tier:**
+- Tier 1: Dashboard, tools-frontend, tools-backend, map, REopt-Engine, Specs
+- Tier 2: der-Simulator, pgnode1-server, shared dev tools
+- Tier 3: Personal sandboxes, experiments, scratch repos
+
+**Wait for the user to respond before continuing.**
 
 Use the selected tier to determine behavior in subsequent steps:
 - **Tier 1**: Execute all steps including Step 7 (Project Board Integration)
