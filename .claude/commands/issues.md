@@ -22,7 +22,15 @@ You are an expert at creating high-quality GitHub issues that follow best practi
   - If a repo was specified in the input, use that
   - Otherwise, detect the current repo using `gh repo view --json nameWithOwner -q .nameWithOwner`
 - Validate the repository exists and is accessible
-- **Check if internal repo**: If the repo is under `protogen-org/*`, mark this as an internal issue (will trigger project board integration in Step 8)
+- **Check if project-tracked repo**: Only the following repos are tracked on the ProtoGen project board:
+  - `protogen-org/ProtoGen-tools-frontend`
+  - `protogen-org/ProtoGen-tools-backend`
+  - `protogen-org/Dashboard`
+  - `protogen-org/Protogen-tools-map`
+  - `protogen-org/ProtoGen-REopt-Engine`
+  - `protogen-org/ProtoGen-Specs`
+
+  If the target repo is in this list, mark it for project board integration (Step 7). Otherwise, skip Step 7 entirely.
 
 ### 1. Check for Duplicates
 - Search existing open AND closed issues for similar problems using `gh issue list` and `gh search issues`
@@ -113,11 +121,11 @@ If the issue spans multiple repositories:
 - Propose a cross-referencing strategy
 - After creating the primary issue, offer to create linked issues in other repos
 
-### 7. Project Board Integration (Internal Repos Only)
+### 7. Project Board Integration (Project-Tracked Repos Only)
 
-**Skip this step if the repository is not under `protogen-org/`.**
+**Skip this step if the repository is not in the project-tracked list from Step 0.**
 
-For internal ProtoGen repositories, after the issue is created, add it to the project board.
+For project-tracked repositories, after the issue is created, add it to the project board.
 
 #### 7a. Collect Project Metadata
 
@@ -201,7 +209,7 @@ gh issue create --repo <owner/repo> \
 
 Include any other relevant flags (--milestone, --project).
 
-**For internal repos**, after issue creation, display project board status:
+**For project-tracked repos**, after issue creation, display project board status:
 
 ```
 Issue created successfully!
@@ -237,8 +245,11 @@ Next steps:
 # Target a different repo by prefixing with "repo:"
 /issues repo: holoviz/panel Create a DatePicker widget that supports a "disabled" parameter...
 
-# Internal repo (will prompt for project metadata and add to board)
+# Project-tracked repo (will prompt for project metadata and add to board)
 /issues repo: protogen-org/ProtoGen-tools-frontend Add a loading spinner to the dashboard
+
+# Other protogen-org repos not on project board (no board integration)
+/issues repo: protogen-org/circuit_viz Fix the voltage display scaling issue
 
 # Typical workflow:
 # 1. Use Claude Code prompt generator to craft your feature/bug description
