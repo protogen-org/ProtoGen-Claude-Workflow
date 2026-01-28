@@ -17,7 +17,7 @@ ProtoGen repositories use tiered automation based on collaboration requirements:
 | Tier | Description | Workflow | Repositories |
 |------|-------------|----------|--------------|
 | **0** | Workflow Infrastructure | PR required, team review, explicit confirmation | ProtoGen-Claude-Workflow |
-| **1** | Production (Board) | Full `/project-*` commands, PR required | frontend, backend, Dashboard, map, REopt-Engine, Specs |
+| **1** | Production (Board) | Full `/project-*` commands, PR required | frontend, backend, Dashboard, map, REopt-Engine |
 | **2** | Team Dev Tools | `/issues` + `/work`, PRs recommended | batch_reopt, sandbox_dash, circuit_viz, pv_viz |
 | **3** | Personal/Infra | Direct commits OK, basic git hygiene | Personal repos, legacy tools, infrastructure |
 
