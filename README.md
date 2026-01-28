@@ -21,6 +21,14 @@ ProtoGen repositories use tiered automation based on collaboration requirements:
 | **2** | Team Dev Tools | `/issues` + `/work`, PRs recommended | batch_reopt, sandbox_dash, circuit_viz, pv_viz |
 | **3** | Personal/Infra | Direct commits OK, basic git hygiene | Personal repos, legacy tools, infrastructure |
 
+### Why Different Workflows?
+
+**Production code repos** (Tier 1) use the full `dev→staging→main` pipeline because code deployments need staged testing environments, CI/CD validation, and rollback capability. Each environment corresponds to a real deployment target.
+
+**Documentation and configuration repos** (Tier 2/3) use simplified `feature→main` workflows because these repos don't deploy to environments—changes take effect when merged. The extra branches would add overhead without benefit. The simplified flow still requires PRs and review, maintaining quality without unnecessary complexity.
+
+This is intentional: **match workflow complexity to deployment complexity**.
+
 ### Tier 0: Special Handling
 
 **This repository (ProtoGen-Claude-Workflow) is Tier 0.** Changes here affect the entire team's workflow. When working in this repo:
@@ -137,10 +145,10 @@ Global commands available in any Claude Code session:
 ### Documentation
 
 - [Setup Guide](docs/SETUP_GUIDE.md) - Detailed setup instructions for Windows and Linux
-- [Workflow Guide](docs/WORKFLOW_GUIDE.md) - Complete development workflow walkthrough
+- [Workflow Guide](docs/WORKFLOW_GUIDE.md) - Complete development workflow with **Mermaid flowcharts** for the development lifecycle, bug origin decisions, and understanding commits/pushes/PRs
 - [Command Reference](docs/COMMAND_REFERENCE.md) - All commands with examples
 - [MCP Servers](docs/MCP_SERVERS.md) - Team-standard MCP server configuration
-- [Migration Guide](docs/MIGRATION_GUIDE.md) - Migrate from existing setups
+- [Migration Guide](docs/MIGRATION_GUIDE.md) - Migrate from existing setups, includes **tier decision flowchart**
 - [Troubleshooting](docs/TROUBLESHOOTING.md) - Common issues and solutions
 
 ## Repository Structure

@@ -8,39 +8,81 @@ A practical guide to developing with Claude Code on Windows. This workflow uses 
 
 This workflow automates the entire development cycle: from creating well-structured GitHub issues, through implementation, to PR review and merge. The key insight is that **configuration syncs via Dropbox** while **local setup is minimal**.
 
-```
-                           YOUR DEVELOPMENT LIFECYCLE
-    ┌─────────────────────────────────────────────────────────────────────┐
-    │                                                                     │
-    │   ┌─────────┐      ┌─────────┐      ┌─────────┐      ┌─────────┐   │
-    │   │ /issues │ ───► │ /work   │ ───► │   prv   │ ───► │ pr-done │   │
-    │   │         │      │ or ccw  │      │         │      │         │   │
-    │   └─────────┘      └─────────┘      └─────────┘      └─────────┘   │
-    │                                                                     │
-    │   Create a         Implement        Verify the       Merge and     │
-    │   GitHub issue     the feature      PR works         clean up      │
-    │                                                                     │
-    └─────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph START["1. START WORK"]
+        A[Issue in backlog] --> B["/project-workflow"]
+        B --> C[Creates issue + branch + board update]
+    end
 
-    CHOOSING YOUR IMPLEMENTATION PATH:
-    ┌────────────────────────────────────────────────────────────────────┐
-    │                                                                    │
-    │   Simple task?              Complex task or want to multitask?    │
-    │   ─────────────             ──────────────────────────────────    │
-    │                                                                    │
-    │   Use /work directly        Use ccw (worktree command)            │
-    │   in Claude Code            ─────────────────────────             │
-    │   ─────────────────         • Creates isolated copy of repo       │
-    │   • Quick, focused          • Can run multiple agents in parallel │
-    │   • One task at a time      • Each issue gets its own folder      │
-    │   • Good for small fixes    • Good for long-running tasks         │
-    │                                                                    │
-    │   cd ~/Documents/myrepo     cd ~/Documents/myrepo                 │
-    │   cc                        ccw 15                                │
-    │   > /work 15                (automatically runs /work 15)         │
-    │                                                                    │
-    └────────────────────────────────────────────────────────────────────┘
+    subgraph DEV["2. DEVELOPMENT"]
+        D[Code changes] --> E[Local tests]
+        E --> F[git commit]
+        F --> G{More work?}
+        G -->|Yes| D
+        G -->|No| H[git push]
+    end
+
+    subgraph PR["3. PR & REVIEW"]
+        I[gh pr create --base dev]
+        I --> J["/project-update --status review"]
+        J --> K{Approved?}
+        K -->|Yes| L[Merge to dev]
+    end
+
+    subgraph PROMOTE["4. PROMOTION"]
+        M["/project-promote"]
+        M --> N[QA Testing]
+        N --> O[Staging Deploy]
+        O --> P[Production Deploy]
+    end
+
+    C --> D
+    H --> I
+    K -->|Changes needed| D
+    L --> M
 ```
+
+### Choosing Your Implementation Path
+
+```mermaid
+flowchart TD
+    START([New Feature Request]) --> ISSUE[Create GitHub Issue]
+    ISSUE --> BOARD["/project-create or /project-workflow"]
+
+    subgraph SETUP["Branch Setup"]
+        BOARD --> FETCH[git fetch origin]
+        FETCH --> CHECKOUT[git checkout dev]
+        CHECKOUT --> PULL[git pull origin dev]
+        PULL --> CREATE[git checkout -b feature/PROJ-YYYYMMDD-##-desc]
+    end
+
+    subgraph DEVELOP["Development Cycle"]
+        CREATE --> CODE[Write code]
+        CODE --> TEST[Run local tests]
+        TEST --> PASS{Tests pass?}
+        PASS -->|No| CODE
+        PASS -->|Yes| COMMIT[git add & commit]
+        COMMIT --> MORE{More work?}
+        MORE -->|Yes| CODE
+        MORE -->|No| PUSH[git push -u origin branch]
+    end
+
+    subgraph REVIEW["PR & Review"]
+        PUSH --> PR[gh pr create --base dev]
+        PR --> STATUS["/project-update --status review"]
+        STATUS --> APPROVED{PR Approved?}
+        APPROVED -->|Changes needed| CODE
+        APPROVED -->|Yes| MERGE[Merge to dev]
+    end
+
+    MERGE --> PROMOTE[Follow promotion workflow<br/>dev → staging → main]
+```
+
+| Path | When to Use | Command |
+|------|-------------|---------|
+| **Simple task** | Quick fixes, one task at a time, small changes | `cc` then `/work 15` |
+| **Complex/parallel work** | Long-running tasks, multiple issues, isolated testing | `ccw 15` (creates worktree + runs `/work 15`) |
 
 ---
 
@@ -519,6 +561,176 @@ Shows you:
 | `ccw-clean -List` | Terminal | List all worktrees |
 | `/startup` | Claude Code | Start of day overview |
 | `/closedown` | Claude Code | End of day summary |
+
+---
+
+## Bug Origin Decision
+
+When fixing a bug, the key question is: **which branch should I create the fix from?**
+
+```mermaid
+flowchart TD
+    START([Bug Discovered]) --> Q1{Where was bug found?}
+    Q1 -->|Production| CHECK_STG{Exists in staging?}
+    Q1 -->|Staging| CHECK_DEV_S{Exists in dev?}
+    Q1 -->|Dev| CREATE_DEV[bugfix from dev]
+
+    CHECK_STG -->|Yes| CHECK_DEV_M{Exists in dev?}
+    CHECK_STG -->|No| CREATE_HOTFIX[hotfix from main]
+
+    CHECK_DEV_M -->|Yes| CREATE_DEV
+    CHECK_DEV_M -->|No| CREATE_STG[bugfix from staging]
+
+    CHECK_DEV_S -->|Yes| CREATE_DEV
+    CHECK_DEV_S -->|No| CREATE_STG
+```
+
+### Quick Reference Table
+
+| Bug Found In | Exists in Staging? | Exists in Dev? | Create From | Merge Flow |
+|--------------|-------------------|----------------|-------------|------------|
+| Production   | No                | -              | main (hotfix) | main→staging→dev |
+| Production   | Yes               | No             | staging (bugfix) | staging→main + cherry-pick dev |
+| Production   | Yes               | Yes            | dev (bugfix) | dev→staging→main |
+| Staging      | -                 | No             | staging (bugfix) | staging→main + cherry-pick dev |
+| Staging      | -                 | Yes            | dev (bugfix) | dev→staging→main |
+
+**Key Principle:** Always fix in the OLDEST branch where the bug exists, then merge forward.
+
+---
+
+## Understanding Commits, Pushes, and Pull Requests
+
+A common misconception: "Some of us use pull requests, others commit and push." These aren't different approaches—they're sequential steps in the same workflow.
+
+```mermaid
+flowchart LR
+    subgraph LOCAL["Your Machine"]
+        EDIT[Edit files] --> STAGE[git add]
+        STAGE --> COMMIT[git commit]
+    end
+
+    subgraph REMOTE["GitHub"]
+        BRANCH[Your feature branch]
+        TARGET[dev/staging/main]
+    end
+
+    COMMIT -->|git push| BRANCH
+    BRANCH -->|Pull Request| TARGET
+```
+
+### The Three Steps
+
+| Step | What It Does | Where | Analogy |
+|------|--------------|-------|---------|
+| **Commit** | Saves a snapshot of changes with a message | Local only | Saving a document |
+| **Push** | Uploads commits to GitHub | Local → Remote | Uploading to cloud storage |
+| **Pull Request** | Requests review and merge into another branch | GitHub | Submitting for approval |
+
+**Key Insight:** Pushing does NOT merge anything. It only uploads your commits to your branch on GitHub. A Pull Request is a separate step that requests someone review and merge your branch into another branch.
+
+### Why This Matters
+
+- Without a PR, your pushed code sits on your feature branch—visible but not integrated
+- PRs enable code review, discussion, and CI/CD checks before merging
+- Some repos allow direct pushes to main (Tier 3 personal repos), others require PRs (Tier 1 production repos)
+
+### When Each Happens
+
+| Action | When You Do It |
+|--------|----------------|
+| Commit | After completing a logical unit of work (frequently, even multiple times per hour) |
+| Push | When you want your work backed up on GitHub or ready for others to see |
+| Pull Request | When your feature/fix is complete and ready for review and integration |
+
+---
+
+## Git Commands Reference
+
+### Before Starting Any Work
+
+```bash
+# 1. Fetch latest from remote
+git fetch origin
+
+# 2. Check your current branch
+git branch
+
+# 3. Switch to main/dev and pull latest
+git checkout main
+git pull origin main
+```
+
+### Creating a Feature Branch
+
+```bash
+# From the correct base branch (dev for features, main for hotfixes)
+git checkout dev
+git pull origin dev
+git checkout -b feature/PROJ-YYYYMMDD-##-description
+
+# Push and set upstream
+git push -u origin feature/PROJ-YYYYMMDD-##-description
+```
+
+### Creating a Pull Request
+
+```bash
+# Option 1: Using gh CLI (recommended)
+gh pr create --base dev --title "Your PR title" --body "Description"
+
+# Option 2: Using GitHub web UI
+# Go to repo → Pull requests → New pull request
+# Select base branch (dev/staging/main) and compare branch (your feature)
+```
+
+### Checking Branch Status
+
+```bash
+# See what commits are in your branch but not in main
+git log origin/main..HEAD --oneline
+
+# See what's different between branches
+git diff origin/main..HEAD --stat
+```
+
+### Merging a PR (after approval)
+
+```bash
+# Using gh CLI
+gh pr merge <PR#> --squash --delete-branch
+
+# Or merge via GitHub UI, then delete local branch
+git branch -d feature/PROJ-YYYYMMDD-##-description
+```
+
+### Deleting Branches
+
+```bash
+# Delete local branch (safe - only if merged)
+git branch -d branch-name
+
+# Delete local branch (force - even if not merged)
+git branch -D branch-name
+
+# Delete remote branch
+git push origin --delete branch-name
+```
+
+### Cherry-picking (for hotfixes)
+
+```bash
+# After merging hotfix to main, apply to staging and dev
+git checkout staging
+git pull origin staging
+git cherry-pick <commit-sha>
+git push origin staging
+
+git checkout dev
+git pull origin dev
+git cherry-pick <commit-sha>
+git push origin dev
+```
 
 ---
 

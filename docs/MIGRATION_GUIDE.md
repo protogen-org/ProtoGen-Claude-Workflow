@@ -358,21 +358,22 @@ source ~/.bashrc
 
 Use this decision tree for any repository:
 
-```
-Is it ProtoGen-Claude-Workflow?
-├── YES → Tier 0 (SPECIAL - PR required, team review, explicit confirmation)
-└── NO → Continue...
-    │
-    Is it on the Grid Nav Board (#8)?
-    ├── YES → Tier 1 (Full GitHub Projects workflow)
-    │   Repos: frontend, backend, Dashboard, map, REopt-Engine, Specs
-    └── NO → Continue...
-        │
-        Is it a shared team dev tool?
-        ├── YES → Tier 2 (Simplified workflow)
-        │   Repos: batch_reopt, sandbox_dash, circuit_viz, pv_viz
-        └── NO → Tier 3 (Minimal workflow)
-            Personal, infrastructure, legacy, specialized repos
+```mermaid
+flowchart TD
+    START([Which repo?]) --> Q1{Is it ProtoGen-Claude-Workflow?}
+
+    Q1 -->|Yes| TIER0[/"Tier 0: SPECIAL<br/>PR required, team review,<br/>explicit confirmation"/]
+    Q1 -->|No| Q2{Is it on the Grid Nav Board?}
+
+    Q2 -->|Yes| TIER1[/"Tier 1: Production<br/>Full /project-* commands<br/>PR required"/]
+    Q2 -->|No| Q3{Is it a shared team dev tool?}
+
+    Q3 -->|Yes| TIER2[/"Tier 2: Team Dev<br/>/issues + /work<br/>PRs recommended"/]
+    Q3 -->|No| TIER3[/"Tier 3: Personal/Infra<br/>Direct commits OK<br/>Basic git hygiene"/]
+
+    TIER1 --- TIER1_REPOS["frontend, backend, Dashboard,<br/>map, REopt-Engine, Specs"]
+    TIER2 --- TIER2_REPOS["batch_reopt, sandbox_dash,<br/>circuit_viz, pv_viz"]
+    TIER3 --- TIER3_REPOS["Personal, infrastructure,<br/>legacy, specialized repos"]
 ```
 
 ---
