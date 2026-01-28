@@ -22,7 +22,7 @@ Update fields on an existing project board item.
 
 ## Valid Status Values
 
-From `.claude-project-config.yml` (in workflow repo or current directory):
+Loaded from `.claude-project-config.yml`:
 - backlog, reported, triage, ready
 - in_progress, review, qa
 - fix_ready, verified, approved
@@ -30,6 +30,23 @@ From `.claude-project-config.yml` (in workflow repo or current directory):
 - done, closed
 
 ## Instructions
+
+### Step 0: Load Configuration
+
+Look for `.claude-project-config.yml` in this order:
+1. Current repo root: `./.claude-project-config.yml` (repo-specific override)
+2. Workflow repo: `~/Documents/ProtoGen-Claude-Workflow/.claude-project-config.yml` (team default)
+3. User home: `~/.claude-project-config.yml` (personal override)
+
+Use the first file found. Parse it to get:
+- `github.project.id` - Project board ID
+- `github.fields.status.id` and `.options` - Status field configuration
+- `github.fields.work_type.id` and `.options` - Work type configuration
+- `github.fields.project.id` and `.options` - Project area configuration
+- `github.fields.priority.id` and `.options` - Priority configuration
+- `github.fields.environment.id` and `.options` - Environment configuration
+
+If no config file exists, display error and stop.
 
 ### Step 1: Find the Project Item
 
@@ -84,15 +101,14 @@ gh issue comment ISSUE_NUMBER --repo protogen-org/REPO \
 
 ## Field ID Reference
 
-From `.claude-project-config.yml` (in workflow repo or current directory):
+Field IDs are loaded from `.claude-project-config.yml`:
+- `github.fields.status.id` - Status field
+- `github.fields.work_type.id` - Work Type field
+- `github.fields.project.id` - Project area field
+- `github.fields.environment.id` - Environment field
+- `github.fields.priority.id` - Priority field
 
-| Field | Field ID |
-|-------|----------|
-| Status | PVTSSF_lADOC5eI7s4BK2oCzg6mc-0 |
-| Work Type | PVTSSF_lADOC5eI7s4BK2oCzg6mmNQ |
-| Project | PVTSSF_lADOC5eI7s4BK2oCzg6med0 |
-| Environment | PVTSSF_lADOC5eI7s4BK2oCzg6me_U |
-| Priority | PVTSSF_lADOC5eI7s4BK2oCzg6mdrk |
+Use these IDs from the loaded config when making GraphQL mutations.
 
 ## Workflow Validation
 

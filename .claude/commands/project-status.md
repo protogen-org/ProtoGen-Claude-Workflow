@@ -16,12 +16,23 @@ Display items on the GitHub Project board grouped by deployment stage.
 
 ## Instructions
 
-1. Load configuration from `.claude-project-config.yml`:
-   - First check current repository directory for repo-specific override
-   - If not found, look in `~/.claude/commands/../../.claude-project-config.yml` (the workflow repo)
-   - The config file contains project ID, field IDs, and repository mappings
+### Step 1: Load Configuration
 
-2. Run this GraphQL query to fetch project items:
+Look for `.claude-project-config.yml` in this order:
+1. Current repo root: `./.claude-project-config.yml` (repo-specific override)
+2. Workflow repo: `~/Documents/ProtoGen-Claude-Workflow/.claude-project-config.yml` (team default)
+3. User home: `~/.claude-project-config.yml` (personal override)
+
+Use the first file found. Parse it to get:
+- `github.project.id` - Project board ID
+- `github.fields.status.id` - Status field ID for filtering
+- Repository mappings for display
+
+If no config file exists, display error and stop.
+
+### Step 2: Fetch Project Items
+
+Run this GraphQL query to fetch project items:
 
 ```bash
 gh api graphql -f query='
@@ -59,9 +70,13 @@ query {
 }'
 ```
 
-3. Parse the response and group results by Status field
+### Step 3: Parse and Group Results
 
-4. Display as formatted tables grouped by status
+Parse the response and group results by Status field.
+
+### Step 4: Display Results
+
+Display as formatted tables grouped by status.
 
 ## Output Format
 
