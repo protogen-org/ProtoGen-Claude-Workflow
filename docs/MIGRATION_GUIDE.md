@@ -76,7 +76,6 @@ When working in ProtoGen-Claude-Workflow, Claude should:
 | ProtoGen-tools-Dashboard | Panel dashboard |
 | Protogen-tools-map | Mapping tool |
 | ProtoGen-REopt-Engine | Julia optimization engine |
-| ProtoGen-Specs | Project specifications |
 
 #### Tier 1 Workflow
 
@@ -107,6 +106,7 @@ When working in ProtoGen-Claude-Workflow, Claude should:
 
 | Repository | Description |
 |------------|-------------|
+| ProtoGen-Specs | Project specifications and architecture |
 | batch_reopt | Batch ReOpt simulations |
 | sandbox_dash | Panel Material UI sandbox |
 | circuit_viz | Circuit visualization |
@@ -371,8 +371,8 @@ flowchart TD
     Q3 -->|Yes| TIER2[/"Tier 2: Team Dev<br/>/issues + /work<br/>PRs recommended"/]
     Q3 -->|No| TIER3[/"Tier 3: Personal/Infra<br/>Direct commits OK<br/>Basic git hygiene"/]
 
-    TIER1 --- TIER1_REPOS["frontend, backend, Dashboard,<br/>map, REopt-Engine, Specs"]
-    TIER2 --- TIER2_REPOS["batch_reopt, sandbox_dash,<br/>circuit_viz, pv_viz"]
+    TIER1 --- TIER1_REPOS["frontend, backend, Dashboard,<br/>map, REopt-Engine"]
+    TIER2 --- TIER2_REPOS["Specs, batch_reopt, sandbox_dash,<br/>circuit_viz, pv_viz"]
     TIER3 --- TIER3_REPOS["Personal, infrastructure,<br/>legacy, specialized repos"]
 ```
 

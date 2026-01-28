@@ -48,8 +48,8 @@ Present these options and wait for selection:
 > 3. **Tier 3 (Personal/Sandbox)** - Minimal workflow
 
 **Examples of each tier:**
-- Tier 1: ProtoGen-tools-Dashboard, tools-frontend, tools-backend, map, REopt-Engine, Specs
-- Tier 2: der-Simulator, pgnode1-server, shared dev tools
+- Tier 1: ProtoGen-tools-Dashboard, tools-frontend, tools-backend, map, REopt-Engine
+- Tier 2: Specs, der-Simulator, pgnode1-server, shared dev tools
 - Tier 3: Personal sandboxes, experiments, scratch repos
 
 **Wait for the user to respond before continuing.**

@@ -465,10 +465,10 @@ Once setup is complete:
    > /issues Add a new feature to the dashboard
    ```
 
-4. **Review GitHub Projects** - [docs/github-projects-integration/](github-projects-integration/)
-   - How to use GitHub Projects integration
-   - Project board management
-   - CI/CD monitoring
+4. **Review GitHub Projects Commands**
+   - See [Command Reference](COMMAND_REFERENCE.md) for `/project-*` commands
+   - Project board management via `/project-status`, `/project-create`, `/project-workflow`
+   - CI/CD monitoring via `/project-cicd`
 
 5. **Customize Your Setup**
    - Add personal aliases to profile
@@ -479,9 +479,9 @@ Once setup is complete:
 
 ## Getting Help
 
-- **Documentation:** Check [docs/](../) directory
-- **Troubleshooting:** [TROUBLESHOOTING.md](../TROUBLESHOOTING.md)
-- **GitHub Projects:** [docs/github-projects-integration/TROUBLESHOOTING.md](github-projects-integration/TROUBLESHOOTING.md)
+- **Documentation:** Check [docs/](.) directory
+- **Troubleshooting:** [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
+- **Command Reference:** [COMMAND_REFERENCE.md](COMMAND_REFERENCE.md)
 - **Team Questions:** Ask in team chat or create a GitHub issue
 
-**Welcome to the ProtoGen Claude Code workflow!** 🚀
+**Welcome to the ProtoGen Claude Code workflow!**
