@@ -318,6 +318,13 @@ What it does:
 4. Creates an issue with acceptance criteria and code references
 5. Gives you the `gh` command to publish it
 
+**Tier-aware behavior:** For `protogen-org/*` repos, prompts you to select a workflow tier:
+- **Tier 1 (Production)**: Full research + adds to GitHub Projects board
+- **Tier 2 (Team Dev)**: Full research, no board integration
+- **Tier 3 (Personal)**: Streamlined research, basic issue format
+
+External repos skip tier selection and follow the target repo's conventions.
+
 ---
 
 #### `/work` - Implement an Issue

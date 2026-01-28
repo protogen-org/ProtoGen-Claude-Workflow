@@ -1,6 +1,10 @@
 # Create Project Item
 
-Create a new GitHub issue with proper typing and add to the project board.
+Quick issue creation for project management - creates a GitHub issue and adds it to the project board with minimal friction.
+
+**Use this for**: Quick captures, PM task logging, simple issues that don't need research.
+
+**Use `/issues` instead for**: Well-researched issues with duplicate checking, code references, and detailed acceptance criteria.
 
 ## Usage
 
@@ -265,3 +269,8 @@ Next steps:
 - Check gh CLI authentication before proceeding
 - If issue creation fails, display error and do not attempt board update
 - If board update fails, display issue URL and manual instructions
+
+## Related Commands
+
+- `/issues` - Full research-driven issue creation (duplicate check, code refs, detailed structure)
+- `/project-workflow` - Start working on an issue (creates branch, updates status)
