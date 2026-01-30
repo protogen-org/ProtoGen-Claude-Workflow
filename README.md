@@ -74,6 +74,11 @@ New-Item -ItemType SymbolicLink `
 ln -s "$(pwd)/.claude/commands" "$HOME/.claude/commands"
 ```
 
+> **Important:** This symlink means changes you make to commands affect this repo's working directory.
+> - Use **project-level commands** (`.claude/commands/` in your repo) for personal/experimental work
+> - Use **branches and PRs** to share improvements with the team
+> - See [docs/COMMAND_SHARING.md](docs/COMMAND_SHARING.md) for the full guide on personal vs team commands
+
 **3. Set up workflow scripts:**
 
 Add to your shell profile to load the workflow functions on startup.
