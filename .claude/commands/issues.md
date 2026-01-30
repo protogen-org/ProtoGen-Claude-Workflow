@@ -34,9 +34,26 @@ This command adapts its behavior based on the repository's workflow tier:
   - Otherwise, detect the current repo using `gh repo view --json nameWithOwner -q .nameWithOwner`
 - Validate the repository exists and is accessible
 
-### 0a. Determine Workflow Tier
+### 0a. Check for Project Config File
 
-**For non-protogen-org repos:** Mark as "External" and skip tier selection.
+**FIRST**, check if the repo has a `.claude-project-config.yml` file:
+
+```bash
+cat .claude-project-config.yml 2>/dev/null
+```
+
+**If config file exists:**
+- Read the config and extract: `tier`, `project.id`, `fields.*` settings
+- Use the config's `tier` value (don't prompt)
+- **Enable project board integration** if `project.id` is present, regardless of tier
+- Use the config's field IDs for project board operations (not hardcoded protogen-org IDs)
+
+**If no config file:**
+- Continue with tier detection below
+
+### 0b. Determine Workflow Tier (if no config file)
+
+**For non-protogen-org repos without config:** Mark as "External" and skip tier selection.
 
 **For protogen-org repos:** **STOP and ask the user to select the workflow tier. DO NOT auto-select or infer the tier - you MUST prompt and wait for the user's response.**
 
@@ -58,6 +75,7 @@ Use the selected tier to determine behavior in subsequent steps:
 - **Tier 1**: Execute all steps including Step 7 (Project Board Integration)
 - **Tier 2**: Execute Steps 1-6, skip Step 7, add team labels
 - **Tier 3**: Streamlined execution - skip duplicate deep-search, minimal research, basic issue structure
+- **Tier 3 with config**: Streamlined research, BUT include Step 7 using config's project board settings
 - **External**: Execute Steps 1-6, follow target repo conventions
 
 ### 1. Check for Duplicates
@@ -155,30 +173,36 @@ If the issue spans multiple repositories:
 - Propose a cross-referencing strategy
 - After creating the primary issue, offer to create linked issues in other repos
 
-### 7. Project Board Integration (Tier 1 Only)
+### 7. Project Board Integration
 
-**Skip this step unless Tier 1 was selected in Step 0a.**
+**Execute this step if:**
+- Tier 1 was selected, OR
+- A `.claude-project-config.yml` file exists with `project.id` defined
 
-For Tier 1 (Production) repositories, after the issue is created, add it to the project board.
+After the issue is created, add it to the project board.
 
 #### 7a. Collect Project Metadata
 
 Ask the user for:
 - **Type**: feature | bug | hotfix | task
-- **Project**: GRID | DASH | MAP | REOPT | DB | MGNAV | SPEC
-- **Priority**: P0 (Critical) | P1 (High) | P2 (Medium) | P3 (Low). Default: P2
+- **Project**: Use options from config file's `fields.project.options`, or default to: GRID | DASH | MAP | REOPT | DB | MGNAV | SPEC
+- **Priority**: P0 (Critical) | P1 (High) | P2 (Medium) | P3 (Low). Use config's `default_priority` if set, otherwise P2
+
+**For repos with config file:** Check for `testbed.default_project` and `testbed.default_priority` to suggest defaults.
 
 #### 7b. Add to Project Board
 
+Use the project ID from `.claude-project-config.yml` (`github.project.id`) or fall back to protogen-org default.
+
 ```bash
 # Get issue node ID
-ISSUE_ID=$(gh issue view ISSUE_NUMBER --repo protogen-org/REPO --json id -q .id)
+ISSUE_ID=$(gh issue view ISSUE_NUMBER --repo OWNER/REPO --json id -q .id)
 
-# Add to project
+# Add to project (use PROJECT_ID from config file)
 gh api graphql -f query='
 mutation {
   addProjectV2ItemById(input: {
-    projectId: "PVT_kwDOC5eI7s4BK2oC"
+    projectId: "PROJECT_ID_FROM_CONFIG"
     contentId: "'$ISSUE_ID'"
   }) {
     item { id }
@@ -188,28 +212,28 @@ mutation {
 
 #### 7c. Set Project Fields
 
-Use the field IDs from `.claude-project-config.yml` (in workflow repo or current directory) to set fields:
+Use the field IDs from `.claude-project-config.yml` to set fields:
 
 ```bash
 # Get the project item ID from Step 7b response, then:
 gh api graphql -f query='
 mutation {
   updateProjectV2ItemFieldValue(input: {
-    projectId: "PVT_kwDOC5eI7s4BK2oC"
+    projectId: "PROJECT_ID_FROM_CONFIG"
     itemId: "ITEM_ID"
-    fieldId: "FIELD_ID"
-    value: { singleSelectOptionId: "OPTION_ID" }
+    fieldId: "FIELD_ID_FROM_CONFIG"
+    value: { singleSelectOptionId: "OPTION_ID_FROM_CONFIG" }
   }) {
     projectV2Item { id }
   }
 }'
 ```
 
-Set these fields:
-- **Work Type**: Based on type parameter
-- **Project**: Based on project parameter
-- **Priority**: Based on priority parameter (default P2)
-- **Status**: Set to "Backlog" (or "In Progress" for hotfixes)
+Set these fields (using IDs from config's `fields` section):
+- **Work Type**: Based on type parameter → `fields.work_type.options.<type>`
+- **Project**: Based on project parameter → `fields.project.options.<project>`
+- **Priority**: Based on priority parameter → `fields.priority.options.<priority>`
+- **Status**: Set to "Backlog" → `fields.status.options.backlog` (or "In Progress" for hotfixes)
 
 #### 7d. Hotfix Special Handling
 
@@ -243,24 +267,25 @@ gh issue create --repo <owner/repo> \
 
 Include any other relevant flags (--milestone, --project).
 
-**For Tier 1 repos**, after issue creation, display project board status:
+**For repos with project board integration** (Tier 1 OR repos with `.claude-project-config.yml`), after issue creation, display project board status:
 
 ```
 Issue created successfully!
 
   Issue: #123
   Title: [Feature] Add user dashboard widget
-  Repo:  protogen-org/ProtoGen-tools-frontend
-  URL:   https://github.com/protogen-org/ProtoGen-tools-frontend/issues/123
+  Repo:  owner/repo-name
+  URL:   https://github.com/owner/repo-name/issues/123
 
 Project board updated:
+  Board:    <project title from config or "ProtoGen Development">
   Status:   Backlog
   Type:     Feature
-  Project:  GRID
-  Priority: P2 - Medium
+  Project:  <project field value>
+  Priority: <priority value>
 
 Next steps:
-  1. Create branch: feature/GRID-20260123-01-user-dashboard-widget
+  1. Create branch: feature/<PREFIX>-20260123-01-short-description
   2. Or use /project-workflow to automate branch creation
 ```
 
